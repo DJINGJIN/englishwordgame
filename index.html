@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语单词配对消消乐</title>
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+       .bubble-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 800px;
+        }
+
+       .bubble {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+       .bubble.en {
+            background-color: darkblue;
+            color: white;
+        }
+
+       .bubble.zh {
+            background-color: lightblue;
+            color: black;
+        }
+
+       .bubble:hover {
+            transform: scale(1.1);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bubble-container" id="bubble-container"></div>
+    <button id="reset-button">重置</button>
+
+    <script>
+        // 中英文配对数据
+        const pairs = [
+            { en: 'abandon', zh: '放弃' },
+            { en: 'ability', zh: '能力' },
+            { en: 'able', zh: '能够' },
+            { en: 'abroad', zh: '在国外' },
+            { en: 'absence', zh: '缺席' },
+            { en: 'CPU', zh: '中央处理器' },
+            { en: 'RAM', zh: '随机存取存储器（内存）' },
+            { en: 'ROM', zh: '只读存储器' },
+            { en: 'hard disk', zh: '硬盘' },
+            { en: 'motherboard', zh: '主板' },
+            { en: 'mouse', zh: '鼠标' },
+            { en: 'keyboard', zh: '键盘' },
+            { en: 'monitor', zh: '显示器' },
+            { en: 'modem', zh: '调制解调器' },
+            { en: 'network', zh: '网络' },
+            { en: 'software', zh: '软件' },
+            { en: 'program', zh: '程序' },
+            { en: 'virus', zh: '病毒' }
+        ];
+
+        const bubbleContainer = document.getElementById('bubble-container');
+        const resetButton = document.getElementById('reset-button');
+        let selectedBubble = null;
+
+        // 随机打乱数组顺序
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 创建泡泡
+        function createBubbles() {
+            const allWords = [];
+            pairs.forEach(pair => {
+                allWords.push({ text: pair.en, lang: 'en' });
+                allWords.push({ text: pair.zh, lang: 'zh' });
+            });
+            const shuffledWords = shuffleArray(allWords);
+
+            bubbleContainer.innerHTML = '';
+            shuffledWords.forEach(word => {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble', word.lang);
+                bubble.textContent = word.text;
+                bubble.addEventListener('click', () => handleBubbleClick(bubble));
+                bubbleContainer.appendChild(bubble);
+            });
+        }
+
+        // 处理泡泡点击事件
+        function handleBubbleClick(bubble) {
+            if (!selectedBubble) {
+                selectedBubble = bubble;
+            } else {
+                const selectedText = selectedBubble.textContent;
+                const currentText = bubble.textContent;
+                const isMatch = pairs.some(pair => {
+                    return (selectedText === pair.en && currentText === pair.zh) ||
+                        (selectedText === pair.zh && currentText === pair.en);
+                });
+
+                if (isMatch) {
+                    selectedBubble.remove();
+                    bubble.remove();
+                }
+                selectedBubble = null;
+            }
+        }
+
+        // 重置功能
+        function resetGame() {
+            selectedBubble = null;
+            createBubbles();
+        }
+
+        // 初始化游戏
+        createBubbles();
+
+        // 绑定重置按钮事件
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+
+</html>
